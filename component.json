@@ -1,0 +1,8 @@
+{
+  "name": "bertha.js",
+  "version": "0.0.1",
+  "main": ["./bertha.js"],
+  "dependencies": {
+    "jquery": ">1.8.0"
+  }
+}
