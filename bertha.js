@@ -36,10 +36,30 @@
 		plugin = knownPlugins[opts.plugin];
 		url = plugin.url.call(plugin, opts);
 		params = plugin.params.call(plugin, opts);
-		
-		return createRequest(url, params, true);
+
+		var xhr = createRequest(url, params, true);
+
+		if (opts.processOptionsSheet) {
+			xhr.pipe(preProcessOptions);
+		}
+		return xhr;
 	};
 
+	var convertOptsSheet =  function convertOptsSheet(sheet) {
+		var newSheet = {};
+		sheet.forEach(function (n) {
+			this[n.name] = n.value;
+		}, newSheet);
+		return newSheet;
+	};
+
+	var preProcessOptions = function preProcessOptions(data) {
+		if (data && data.options) {
+			data.options = convertOptsSheet(data.options);
+		}
+
+		return data;
+	}
 	
 	var basicUrl = function basicUrl(opts) {
 
