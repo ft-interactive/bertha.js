@@ -1,6 +1,6 @@
 {
   "name": "bertha.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./bertha.js",
   "scripts" : [
   	"./bertha.js"
