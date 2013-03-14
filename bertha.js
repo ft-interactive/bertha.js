@@ -99,18 +99,24 @@
 		}
 	};
 
-	// best practice jQuery JSONP implementation
+	// best practice jQuery JSON with JSONP fallback implementation
 	var createRequest = function createRequest(url, queryParams, cache) {
-		return $.ajax({
+		var opts = {
+			type: 'GET',
+			dataType: 'json',
 			cache: !!cache,
 			data: queryParams,
-			dataType: 'jsonp',
-			global: false,
-			jsonpCallback: Bertha.defaults.callbackName,
-			timeout: 9000,
-			type: 'GET',
 			url: url
-		});
+		};
+
+		if (!$.support.cors) {
+			opts.dataType = 'jsonp';
+			opts.global = false;
+			opts.jsonpCallback = Bertha.defaults.callbackName;
+			opts.timeout = 9000;
+		}
+
+		return $.ajax(opts);
 	};
 
 })(this, jQuery);
