@@ -4,7 +4,6 @@
 
 	var Bertha = window.Bertha = window.Bertha || {};
 
-
 	Bertha.defaults = Bertha.defaults || {};
 
 	Bertha.defaults.callbackName = 'bertha_callback';
@@ -16,7 +15,6 @@
 		channel: 'publish',
 		params: {}
 	};
-
 	
 	Bertha.getSpreadsheet = function getSpreadsheet(opts) {
 		opts = $.extend(true, {}, Bertha.defaults.spreadsheet, opts);
@@ -42,6 +40,7 @@
 		if (opts.processOptionsSheet) {
 			xhr.pipe(preProcessOptions);
 		}
+
 		return xhr;
 	};
 
@@ -76,7 +75,9 @@
 			throw new Error('No Worksheet specified');
 		}
 
-		return  ['http://', opts.server, opts.command, opts.channel, opts.plugin, opts.id].join('/') + (sheets ? '/' + sheets : '');
+		var server = typeof opts.server == 'function' ? opts.server(opts, Betha.defaults) : opts.server;
+
+		return  ['http://',  server, opts.command, opts.channel, opts.plugin, opts.id].join('/') + (sheets ? '/' + sheets : '');
 	};
 
 	
