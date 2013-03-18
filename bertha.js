@@ -35,11 +35,15 @@
 			throw new Error('Unknown Plugin.');
 		}
 
+		if (!opts.cache) {
+			delete params['exp'];
+		}
+
 		plugin = knownPlugins[opts.plugin];
 		url = plugin.url.call(plugin, opts);
 		params = plugin.params.call(plugin, opts);
 
-		var xhr = createRequest(url, params, true);
+		var xhr = createRequest(url, params, !!opts.cache);
 
 		if (opts.processOptionsSheet) {
 			xhr.pipe(preProcessOptions);
@@ -88,9 +92,8 @@
 	};
 
 	
-	var basicParams = function basicParams() {
-		var params = {};
-		return params;
+	var basicParams = function basicParams(opts) {
+		return opts.params || null;
 	};
 
 	
