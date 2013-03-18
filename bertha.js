@@ -4,6 +4,7 @@
 
 	var Bertha = window.Bertha = window.Bertha || {};
 
+
 	Bertha.defaults = Bertha.defaults || {};
 
 	Bertha.defaults.callbackName = 'bertha_callback';
@@ -13,8 +14,11 @@
 		plugin: 'gss',
 		command: 'view',
 		channel: 'publish',
-		params: {}
+		params: {
+			exp: 'forever'
+		}
 	};
+
 	
 	Bertha.getSpreadsheet = function getSpreadsheet(opts) {
 		opts = $.extend(true, {}, Bertha.defaults.spreadsheet, opts);
@@ -40,15 +44,20 @@
 		if (opts.processOptionsSheet) {
 			xhr.pipe(preProcessOptions);
 		}
-
 		return xhr;
 	};
 
 	var convertOptsSheet =  function convertOptsSheet(sheet) {
+		
+		if (!sheet) return {};
+
 		var newSheet = {};
-		sheet.forEach(function (n) {
-			this[n.name] = n.value;
-		}, newSheet);
+
+		$.each(sheet, function (i, n) {
+			if (!n || !n.name) return;
+			newSheet[n.name] = n.value;
+		});
+
 		return newSheet;
 	};
 
@@ -58,7 +67,7 @@
 		}
 
 		return data;
-	}
+	};
 	
 	var basicUrl = function basicUrl(opts) {
 
@@ -75,13 +84,11 @@
 			throw new Error('No Worksheet specified');
 		}
 
-		var server = typeof opts.server == 'function' ? opts.server(opts, Betha.defaults) : opts.server;
-
-		return  ['http://',  server, opts.command, opts.channel, opts.plugin, opts.id].join('/') + (sheets ? '/' + sheets : '');
+		return  ['http:/', opts.server, opts.command, opts.channel, opts.plugin, opts.id].join('/') + (sheets ? '/' + sheets : '');
 	};
 
 	
-	var basicParams = function basicParams(/*opts*/) {
+	var basicParams = function basicParams() {
 		var params = {};
 		return params;
 	};
@@ -110,7 +117,7 @@
 			url: url
 		};
 
-		if (!$.support.cors) {
+		if (($.browser.msie && $.browser.version < 9) || !$.support.cors) {
 			opts.dataType = 'jsonp';
 			opts.global = false;
 			opts.jsonpCallback = Bertha.defaults.callbackName;
