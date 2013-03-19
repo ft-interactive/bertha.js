@@ -19,7 +19,7 @@
 		}
 	};
 
-	
+
 	Bertha.getSpreadsheet = function getSpreadsheet(opts) {
 		opts = $.extend(true, {}, Bertha.defaults.spreadsheet, opts);
 
@@ -27,27 +27,34 @@
 			plugin,
 			url;
 
-		if (!opts.id) {
-			throw new Error('No Spreadsheet ID specified.');
-		}
-
-		if (!knownPlugins.hasOwnProperty(opts.plugin)) {
+		if (!opts.plugin) {
+			throw new Error('Plugin not specified');
+		} else if (typeof opts.plugin === 'string' && !knownPlugins.hasOwnProperty(opts.plugin)) {
 			throw new Error('Unknown Plugin.');
 		}
 
-		if (!opts.cache) {
-			delete params['exp'];
+		if (typeof opts.plugin === 'string') {
+			plugin = knownPlugins[opts.plugin];	
+		} else {
+			plugin = opts.plugin;
 		}
 
-		plugin = knownPlugins[opts.plugin];
-		url = plugin.url.call(plugin, opts);
-		params = plugin.params.call(plugin, opts);
+		url = typeof plugin.url === 'function' ? plugin.url.call(plugin, opts) : (plugin.url || '').toString();
+
+		if (plugin.params) {
+			params = typeof plugin.params === 'function' ? plugin.params.call(plugin, opts) : plugin.params;
+		}
+
+		if (!opts.cache && params) {
+			delete params['exp'];
+		}
 
 		var xhr = createRequest(url, params, !!opts.cache);
 
 		if (opts.processOptionsSheet) {
 			xhr.pipe(preProcessOptions);
 		}
+		
 		return xhr;
 	};
 
@@ -74,6 +81,10 @@
 	};
 	
 	var basicUrl = function basicUrl(opts) {
+
+		if (!opts.id) {
+			throw new Error('No Spreadsheet ID specified.');
+		}
 
 		var sheets;
 
