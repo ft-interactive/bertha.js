@@ -131,7 +131,9 @@
 			url: url
 		};
 
-		if (($.browser.msie && $.browser.version < 9) || !$.support.cors) {
+		var isIElt9 = /msie [1-8]./.test(navigator.userAgent.toLowerCase());
+
+		if (isIElt9 || !$.support.cors) {
 			opts.dataType = 'jsonp';
 			opts.global = false;
 			opts.jsonpCallback = Bertha.defaults.callbackName;
